@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Romal’s CDL Class A Study Hub</title>
+<style>
+  :root{
+    --accent:#c62828; /* touch of red */
+    --bg:#0e0f12;
+    --panel:#17191f;
+    --muted:#9aa3af;
+    --text:#e5e7eb;
+    --good:#2e7d32;
+    --warn:#ef6c00;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    background:linear-gradient(160deg,#0b0c10,#14151a 40%, #0b0c10);
+    color:var(--text);
+  }
+  header{
+    position:sticky; top:0; z-index:1000;
+    backdrop-filter: blur(8px);
+    background:rgba(14,15,18,.75);
+    border-bottom:1px solid #20222b;
+  }
+  .container{max-width:1100px; margin:0 auto; padding:16px;}
+  h1{margin:.2rem 0 0 0; font-weight:800; letter-spacing:.3px}
+  .sub{color:var(--muted); margin:6px 0 0 0}
+  nav{
+    display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;
+  }
+  nav a{
+    text-decoration:none; color:var(--text);
+    padding:10px 12px; border:1px solid #2a2d37; border-radius:10px;
+    background:#161820;
+  }
+  nav a.active{border-color:var(--accent); box-shadow:0 0 0 2px rgba(198,40,40,.15) inset}
+  main{padding:20px 16px 40px}
+  section{display:none}
+  section.active{display:block}
+  .card{
+    background:var(--panel);
+    border:1px solid #232631;
+    border-radius:14px;
+    padding:16px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+  }
+  .grid{
+    display:grid; gap:16px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  .pill{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid #2a2d37; border-radius:999px; color:var(--muted); font-size:12px;}
+  .btn{
+    cursor:pointer; border:1px solid #2a2d37; color:var(--text); background:#14161d;
+    padding:10px 14px; border-radius:12px; font-weight:600;
+  }
+  .btn.primary{border-color:var(--accent); background:linear-gradient(180deg,#c62828,#8b1e1e); }
+  .btn.ghost{background:transparent}
+  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .center{text-align:center}
+  .muted{color:var(--muted)}
+  .kpi{display:flex; gap:16px; flex-wrap:wrap; margin-top:8px}
+  .kpi .item{background:#121319; border:1px dashed #2b2e38; border-radius:12px; padding:10px 12px}
+  .tag{background:#221417; color:#ffb4b4; border:1px solid #4a1a1d; padding:2px 8px; border-radius:999px; font-size:12px}
+  .hr{height:1px; background:#242735; margin:14px 0}
+  details summary{cursor:pointer}
+  .flashcard{
+    min-height:140px; display:flex; align-items:center; justify-content:center; text-align:center;
+    font-size:1.1rem; padding:18px; border-radius:12px; border:1px solid #2a2d37; background:#14161d;
+  }
+  .progress{
+    height:8px; background:#222430; border-radius:999px; overflow:hidden; border:1px solid #2a2d37;
+  }
+  .progress > div{height:100%; background:linear-gradient(90deg,#c62828,#ef5350)}
+  .q{
+    padding:14px; border:1px solid #2a2d37; border-radius:12px; background:#151821;
+  }
+  .q h4{margin:.2rem 0 .4rem 0}
+  .choices{display:grid; gap:8px; margin-top:8px}
+  .choices label{display:flex; gap:10px; align-items:center; padding:10px; border:1px solid #2a2d37; border-radius:10px; cursor:pointer}
+  .choices input{accent-color:#c62828}
+  .correct{border-color:var(--good) !important}
+  .wrong{border-color:var(--warn) !important}
+  .score{
+    font-weight:700; padding:8px 12px; border-radius:10px; background:#121319; border:1px solid #2a2d37;
+  }
+  footer{color:var(--muted); font-size:12px; text-align:center; padding:24px}
+  .small{font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>Romal’s CDL Class A Study Hub</h1>
+    <p class="sub">Built for Maya ❤ · Study smarter with flashcards, quizzes, and progress tracking</p>
+    <nav id="tabs"></nav>
+  </div>
+</header>
+
+<main class="container">
+  <!-- Sections get injected here -->
+</main>
+
+<footer>
+  <div>Tip: this site works offline. Add it to your phone’s Home Screen for 1‑tap study.</div>
+</footer>
+
+<script>
+const SECTIONS = [
+  {id:"home", title:"Home"},
+  {id:"gk", title:"General Knowledge"},
+  {id:"air", title:"Air Brakes"},
+  {id:"combo", title:"Combination Vehicles"},
+  {id:"pretrip", title:"Pre‑Trip Inspection"},
+  {id:"endorse", title:"Endorsements"},
+  {id:"mood", title:"Motivation"}
+];
+
+const FLASHCARDS = {
+  gk: [
+    ["Max width of most vehicles on interstate highways?", "102 inches (8.5 ft)"],
+    ["When should you use 4‑way flashers?", "When stopped on the roadside or moving very slowly due to a hazard."],
+    ["What’s the ‘12‑15 second’ rule?", "Look ahead 12–15 seconds to scan traffic and hazards."],
+    ["How far ahead should you look in city driving?", "About one block ahead (12–15 seconds)."],
+    ["Most important hand placement on steering wheel?", "9 and 3 (or 10 and 2 where recommended)."],
+    ["When to downshift on a long downgrade?", "Before the hill; never try to downshift after your speed has increased."],
+    ["What is hydroplaning?", "Tires ride on water, losing traction—slow down and avoid sudden moves."],
+    ["How to handle a tire blowout?", "Grip wheel firmly, stay straight, ease off accelerator, do not brake until under control."],
+    ["Safe following distance in seconds for 40‑ft vehicle at 40 mph?", "At least 4 seconds—add 1 second for each additional 10 feet."],
+    ["What is ‘black ice’?", "Thin, nearly invisible ice; appears as wet pavement—use gentle inputs and slow speed."]
+  ],
+  air: [
+    ["Min. tread depth on front tires?", "4/32 inch (steer axle); 2/32 on others."],
+    ["Air brake warning must activate by…", "A drop to 55 psi or lower (manufacturer range 55–75 psi)."],
+    ["Spring brakes apply when pressure falls to…", "20–40 psi (typically around 30 psi)."],
+    ["Normal air compressor cut‑out pressure?", "Typically 120–135 psi (manufacturer spec)."],
+    ["Proper brake drum/rotor crack limit?", "No cracks longer than half the width; follow manufacturer limits."],
+    ["Slack adjuster free play (S‑cam)?", "About 1 inch at pushrod with brakes released."],
+    ["What is ‘brake fade’?", "Loss of braking due to overheating—use proper low gear and stab braking."],
+    ["Parking on grades with air brakes?", "Use parking (spring) brakes; chock wheels if needed."],
+    ["Leak rate (engine off, brakes released, combo vehicle)?", "≤3 psi per minute; with brakes applied ≤4 psi per minute."],
+    ["ABS light should…", "Come on at start then go off; if on while driving, ABS not working—brakes still function normally."]
+  ],
+  combo: [
+    ["What is ‘offtracking’?", "Rear wheels follow a different, tighter path than the front—swing wide on turns."],
+    ["Best way to prevent trailer skid?", "Smooth steering and braking; avoid over‑braking and late downshifts."],
+    ["Trailer jackknife vs tractor jackknife?", "Trailer: trailer skids; Tractor: drive wheels lose traction and pivot around tractor."],
+    ["Where to place the heaviest cargo on a trailer?", "Centered over the axles; low and evenly distributed."],
+    ["What is ‘rearward amplification’?", "Sway increases toward the rear; doubles triples have greater amplification."],
+    ["When coupling, height of trailer vs fifth wheel?", "Trailer should be just low enough that tractor lifts it slightly when backing under."],
+    ["After coupling, how to test a secure connection?", "Perform tug test at low gear with trailer brakes set; visually inspect lockjaw around kingpin."],
+    ["Crossing railroad tracks with a lowboy?", "Use proper route and angle; ensure clearance; never shift while crossing."],
+    ["What is ‘trailer hand valve’ used for?", "To test trailer brakes; never use for parking."],
+    ["How to prevent rollovers?", "Slow before curves, maintain steady speed, keep cargo low and centered."]
+  ],
+  pretrip: [
+    ["Approach inspection—first three things?", "General lean, leaks, lights (look for vehicle leaning, puddles, light lens damage)."],
+    ["Steer tire tread depth?", "Minimum 4/32 inch; no recaps on steer axle (in many fleets)."],
+    ["What is ‘ABC’ for fire extinguisher?", "Types of fires it can handle; ensure charged, secured, and rated properly."],
+    ["Slack adjuster check?", "With brakes released, pull; more than ~1 inch travel indicates adjustment needed."],
+    ["Three red reflective triangles located…", "In cab or storage; check count and condition."],
+    ["Tire inflation check?", "Use tire gauge; check valve stem and caps; no audible leaks."],
+    ["Play in steering wheel?", "No more than 10 degrees (about 2 inches on a 20‑inch wheel)."],
+    ["Brake drum condition?", "No cracks or contaminants; linings not dangerously thin or oil soaked."],
+    ["Lights/reflectors?", "Clean, functional, correct color: amber front/sides, red rear."],
+    ["Emergency equipment?", "Spare fuses (if used), triangles, fire extinguisher"]
+  ],
+  endorse: [
+    ["Hazmat: required documents?", "Shipping papers, emergency response info, and proper ID/placards."],
+    ["Placards required when?", "When load meets hazmat table placarding thresholds or any amount of some materials."],
+    ["Tanker surge control?", "Start/stop smoothly, brake in a straight line, keep adequate following distance."],
+    ["Doubles: converter dolly inspection?", "Check safety chains, pintle hook, air/electric lines, and fifth‑wheel lock."],
+    ["Hazmat: parking with explosives?", "Never park near open flame or within restricted distances; follow special rules."],
+    ["Tanker: effects of high center of gravity?", "Greater rollover risk; take ramps and curves slowly."],
+    ["HM: who may legally accept a hazmat load?", "Driver with current hazmat endorsement and background check clearance."],
+    ["Doubles: preventing trailer ‘crack the whip’?", "Reduce speed, avoid sudden steering, load evenly."],
+    ["Tanker: outage?", "Empty space left to allow for liquid expansion; prevents spill/overpressure."],
+    ["HM: emergency response guidebook (ERG) purpose?", "Provides initial isolation/protective action guidance for hazardous materials incidents."]
+  ]
+};
+
+const QUIZZES = {
+  gk: [
+    {q:"You should scan ahead about how far at highway speeds?", choices:["3–5 seconds","6–8 seconds","12–15 seconds","20–25 seconds"], a:2, explain:"Scan 12–15 seconds ahead to spot hazards early."},
+    {q:"On a downgrade you should downshift…", choices:["After speed increases","Before the hill","Only if speed limit is low","Never"], a:1, explain:"Select a low gear before descending."},
+    {q:"If a tire blows out, you should…", choices:["Brake hard immediately","Steer firmly and hold lane","Accelerate","Downshift quickly"], a:1, explain:"Hold lane, ease off accelerator; brake only when controlled."},
+    {q:"Safe following distance for a 60‑ft combo at 40 mph?", choices:["4 sec","5 sec","6 sec","7 sec"], a:3, explain:"4 sec for first 40 ft + 2 sec for the extra 20 ft = 6 sec."},
+    {q:"Black ice appears as…", choices:["Dry pavement","Wet/shiny pavement","Snow","Gravel"], a:1, explain:"Often looks wet but is icy—slow gently."}
+  ],
+  air: [
+    {q:"Low air warning must activate by:", choices:["65–80 psi","55 psi or lower","90 psi","150 psi"], a:1, explain:"Typically 55 psi or lower (55–75 range)."},
+    {q:"Spring brakes typically apply around:", choices:["90 psi","60 psi","30 psi","10 psi"], a:2, explain:"20–40 psi, often near 30 psi."},
+    {q:"Max air leak (combo, brakes released):", choices:["1 psi/min","2 psi/min","3 psi/min","4 psi/min"], a:2, explain:"≤3 psi per minute for combos with brakes released."},
+    {q:"ABS light stays on while driving. You should:", choices:["Stop immediately","Drive normally but without ABS aid","Pump brakes rapidly","Use hand valve"], a:1, explain:"Brakes still work; just no ABS anti‑lock assistance."},
+    {q:"Slack adjuster free play (S‑cam) should be about:", choices:["1/2 inch","1 inch","2 inches","No free play"], a:1, explain:"About 1 inch at the pushrod."}
+  ],
+  combo: [
+    {q:"Rearward amplification means:", choices:["Less sway at the rear","More sway at the rear","No sway","Only sway in wind"], a:1, explain:"Sway increases toward the back—slow down."},
+    {q:"Best prevention of trailer skid:", choices:["Hard braking","Abrupt downshifts","Smooth inputs","Use hand valve"], a:2, explain:"Smooth steering/braking prevents skids."},
+    {q:"After coupling you should first:", choices:["Raise landing gear fully","Do a tug test","Release trailer brakes","Pull forward fast"], a:1, explain:"Tug test confirms lock before moving."},
+    {q:"Offtracking means:", choices:["Rear wheels follow wider path","Rear wheels follow tighter path","No difference","Front follows rear"], a:1, explain:"Rear wheels track inside—swing wide."},
+    {q:"To prevent rollovers you should:", choices:["Enter curves quickly then brake","Slow before curves","Shift in curves","Use hand valve"], a:1, explain:"Slow before curves; steady speed."}
+  ],
+  pretrip: [
+    {q:"Steering wheel play should be no more than:", choices:["5°","10°","20°","30°"], a:1, explain:"About 10 degrees (~2 inches on 20‑inch wheel)."},
+    {q:"Minimum steer tire tread depth:", choices:["2/32","3/32","4/32","6/32"], a:2, explain:"4/32 on steers; 2/32 others."},
+    {q:"You check slack adjuster by:", choices:["Pressing brake pedal hard","Pulling with brakes released","Spinning tire","Using hand valve"], a:1, explain:"Pull; >~1 inch indicates adjustment needed."},
+    {q:"Three red reflective triangles must be:", choices:["Optional","In cab or storage and in good condition","Only one required","Only for hazmat"], a:1, explain:"Ensure all three are present and good."},
+    {q:"Correct light colors:", choices:["Red front, amber rear","Amber front/sides, red rear","Blue rear","Any color"], a:1, explain:"Amber front/sides; red at rear."}
+  ],
+  endorse: [
+    {q:"Placards are required:", choices:["Never for small loads","Only for tanks","When thresholds are met or specific materials carried","Only in daylight"], a:2, explain:"Follow hazmat tables and special cases."},
+    {q:"Tanker surge is reduced by:", choices:["Hard brakes","Smooth starts/stops","Quick lane changes","High speed"], a:1, explain:"Smooth, gradual inputs reduce surge."},
+    {q:"Who may accept hazmat loads:", choices:["Any CDL driver","Only with HM endorsement and background check","Dispatcher","Warehouse clerk"], a:1, explain:"Requires endorsement and clearance."},
+    {q:"‘Outage’ in tankers is:", choices:["Leak","Empty space for expansion","Overfill protection","Valve type"], a:1, explain:"Leave space for liquid expansion."},
+    {q:"Converter dolly checks include:", choices:["Tire shine","Pintle hook, chains, air/electric, fifth‑wheel lock","Paint color","Mudflap logos"], a:1, explain:"Critical safety connections and locks."}
+  ]
+};
+
+function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function load(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)) ?? fallback } catch(e){ return fallback } }
+
+function el(tag, attrs={}, html=""){
+  const e = document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v])=> e.setAttribute(k,v));
+  e.innerHTML = html;
+  return e;
+}
+
+function renderTabs(){
+  const nav = document.getElementById("tabs");
+  SECTIONS.forEach(s=>{
+    const a = el("a", {href:"#"+s.id, "data-id":s.id}, s.title);
+    a.addEventListener("click", (evt)=>{ evt.preventDefault(); activate(s.id); });
+    nav.appendChild(a);
+  });
+}
+
+function activate(id){
+  document.querySelectorAll("nav a").forEach(a=>{
+    a.classList.toggle("active", a.getAttribute("data-id")===id);
+  });
+  document.querySelectorAll("main section").forEach(sec=>{
+    sec.classList.toggle("active", sec.id===id);
+  });
+  history.replaceState(null, "", "#"+id);
+  save("cdl_active_tab", id);
+}
+
+function card(html){ const c = el("div", {class:"card"}); c.innerHTML = html; return c; }
+
+function renderHome(){
+  const s = el("section", {id:"home", class:"active"});
+  const wrap = el("div", {class:"grid"});
+  wrap.appendChild(card(`
+    <h2>Welcome, Romal 👋</h2>
+    <p class="muted">Your Class A prep is organized into bite‑size decks and quick quizzes. Study on your phone for 5–10 minutes at a time — it adds up fast.</p>
+    <div class="kpi">
+      <div class="item"><span class="small">Decks mastered</span><div id="kpi-decks" style="font-weight:800;font-size:22px">0</div></div>
+      <div class="item"><span class="small">Last session</span><div id="kpi-last" style="font-weight:800;font-size:22px">—</div></div>
+      <div class="item"><span class="small">Best quiz score</span><div id="kpi-best" style="font-weight:800;font-size:22px">0%</div></div>
+    </div>
+    <div class="hr"></div>
+    <div class="row">
+      <button class="btn primary" onclick="activate('gk')">Start: General Knowledge</button>
+      <button class="btn" onclick="activate('pretrip')">Pre‑Trip Deck</button>
+      <button class="btn ghost" onclick="resetProgress()">Reset Progress</button>
+    </div>
+  `));
+  wrap.appendChild(card(`
+    <h3>Study Tips</h3>
+    <ul>
+      <li>👀 Scan ahead 12–15 seconds and say it out loud while driving (as a habit).</li>
+      <li>⛰️ On hills: gear down <em>before</em> the grade; use engine braking.</li>
+      <li>🧯 Know your emergency gear: triangles, fuses, extinguisher.</li>
+      <li>🧠 Spaced practice: 2 short sessions a day beats one long session.</li>
+      <li>📸 For pre‑trip, say your inspection out loud as if testing.</li>
+    </ul>
+  `));
+  s.appendChild(wrap);
+  return s;
+}
+
+function renderDeck(id, title){
+  const s = el("section", {id});
+  const deck = FLASHCARDS[id] || [];
+  const prog = load("fc_"+id, {i:0, known:0});
+  const known = load("known_"+id, new Array(deck.length).fill(false));
+
+  const root = card(`
+    <div class="row" style="justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h2>${title} — Flashcards</h2>
+        <div class="pill"><span>Cards:</span> ${deck.length}</div>
+      </div>
+      <div class="score" id="deck-score-${id}"></div>
+    </div>
+    <div class="progress" style="margin:12px 0 8px 0;"><div id="bar-${id}" style="width:0%"></div></div>
+    <div class="flashcard" id="card-${id}">Loading…</div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" onclick="prevCard('${id}')">◀ Prev</button>
+      <button class="btn primary" onclick="flip('${id}')">Flip</button>
+      <button class="btn" onclick="nextCard('${id}')">Next ▶</button>
+      <button class="btn ghost" onclick="markKnown('${id}')">Mark Known ✓</button>
+    </div>
+    <div class="hr"></div>
+    <h3>Quick Quiz</h3>
+    <div id="quiz-${id}"></div>
+  `);
+
+  s.appendChild(root);
+  return s;
+}
+
+function renderQuiz(id){
+  const holder = document.getElementById("quiz-"+id);
+  const qs = QUIZZES[id] || [];
+  holder.innerHTML = "";
+  qs.forEach((item, idx)=>{
+    const q = el("div", {class:"q"});
+    q.innerHTML = "<h4>Q"+(idx+1)+". "+item.q+"</h4>";
+    const choices = el("div", {class:"choices"});
+    item.choices.forEach((ch, i)=>{
+      const lid = "q"+id+"_"+idx+"_"+i;
+      const lab = el("label", {for:lid});
+      const inp = el("input", {type:"radio", id:lid, name:"q"+id+"_"+idx, value:i});
+      lab.appendChild(inp);
+      const span = el("span"); span.textContent = ch; lab.appendChild(span);
+      choices.appendChild(lab);
+    });
+    const fb = el("div", {class:"muted small", id:"fb_"+id+"_"+idx, style:"margin-top:6px"});
+    q.appendChild(choices);
+    q.appendChild(fb);
+    holder.appendChild(q);
+  });
+  const row = el("div", {class:"row", style:"margin-top:10px"});
+  const btn = el("button", {class:"btn primary"}, "Grade Quiz");
+  const reset = el("button", {class:"btn"}, "Clear Answers");
+  const scoreEl = el("div", {class:"score", id:"score-"+id}, "Score: —");
+  btn.addEventListener("click", ()=> gradeQuiz(id));
+  reset.addEventListener("click", ()=> { renderQuiz(id); });
+  row.appendChild(btn); row.appendChild(reset); row.appendChild(scoreEl);
+  holder.appendChild(row);
+}
+
+function showCard(id){
+  const deck = FLASHCARDS[id]; if(!deck || !deck.length) return;
+  const st = load("fc_"+id, {i:0, side:0});
+  const i = Math.max(0, Math.min(deck.length-1, st.i||0));
+  const side = st.side||0;
+  const elc = document.getElementById("card-"+id);
+  elc.innerHTML = side===0 ? deck[i][0] : "<strong>"+deck[i][1]+"</strong>";
+  updateDeckUI(id);
+}
+
+function flip(id){
+  const st = load("fc_"+id, {i:0, side:0});
+  st.side = st.side===0?1:0;
+  save("fc_"+id, st);
+  showCard(id);
+}
+
+function nextCard(id){
+  const st = load("fc_"+id, {i:0, side:0});
+  st.i = Math.min((FLASHCARDS[id].length-1), (st.i||0)+1); st.side=0;
+  save("fc_"+id, st); showCard(id);
+}
+
+function prevCard(id){
+  const st = load("fc_"+id, {i:0, side:0});
+  st.i = Math.max(0, (st.i||0)-1); st.side=0;
+  save("fc_"+id, st); showCard(id);
+}
+
+function markKnown(id){
+  const st = load("fc_"+id, {i:0, side:0});
+  const known = load("known_"+id, new Array(FLASHCARDS[id].length).fill(false));
+  known[st.i||0] = true;
+  save("known_"+id, known);
+  nextCard(id);
+}
+
+function updateDeckUI(id){
+  const deck = FLASHCARDS[id]; if(!deck) return;
+  const known = load("known_"+id, new Array(deck.length).fill(false));
+  const count = known.filter(Boolean).length;
+  const pct = Math.round(100*count/deck.length);
+  const bar = document.getElementById("bar-"+id);
+  if(bar) bar.style.width = pct+"%";
+  const score = document.getElementById("deck-score-"+id);
+  if(score) score.textContent = `Mastered: ${count}/${deck.length} (${pct}%)`;
+  // KPIs
+  const totalMastered = Object.keys(FLASHCARDS).reduce((acc,k)=>{
+    const kn = load("known_"+k, new Array(FLASHCARDS[k].length).fill(false));
+    return acc + kn.filter(Boolean).length;
+  },0);
+  const totalCards = Object.keys(FLASHCARDS).reduce((acc,k)=> acc + FLASHCARDS[k].length, 0);
+  const decks = Object.keys(FLASHCARDS).filter(k=>{
+    const kn = load("known_"+k, new Array(FLASHCARDS[k].length).fill(false));
+    return kn.filter(Boolean).length === FLASHCARDS[k].length && FLASHCARDS[k].length>0;
+  }).length;
+  const best = load("best_score", 0);
+  const last = load("last_session", "—");
+  const kd = document.getElementById("kpi-decks"); if(kd) kd.textContent = decks;
+  const kb = document.getElementById("kpi-best"); if(kb) kb.textContent = best+"%";
+  const kl = document.getElementById("kpi-last"); if(kl) kl.textContent = last;
+}
+
+function gradeQuiz(id){
+  const qs = QUIZZES[id] || [];
+  let correct = 0;
+  qs.forEach((item, idx)=>{
+    const chosen = document.querySelector(`input[name="q${id}_${idx}"]:checked`);
+    const fb = document.getElementById("fb_"+id+"_"+idx);
+    const blocks = document.querySelectorAll(`#quiz-${id} .q`)[idx];
+    const labels = blocks.querySelectorAll(".choices label");
+    labels.forEach((lab, i)=>{
+      lab.classList.remove("correct","wrong");
+      if(i===item.a) lab.classList.add("correct");
+    });
+    if(chosen){
+      if(Number(chosen.value)===item.a){ correct++; }
+      else {
+        labels[Number(chosen.value)].classList.add("wrong");
+      }
+    }
+    fb.textContent = item.explain;
+  });
+  const pct = Math.round(100*correct/qs.length);
+  document.getElementById("score-"+id).textContent = `Score: ${pct}% (${correct}/${qs.length})`;
+  const best = load("best_score", 0);
+  if(pct>best) save("best_score", pct);
+  const stamp = new Date().toLocaleString();
+  save("last_session", stamp);
+  updateDeckUI(id);
+}
+
+function resetProgress(){
+  Object.keys(localStorage).filter(k=>k.startsWith("fc_")||k.startsWith("known_")||k==="best_score"||k==="last_session"||k==="cdl_active_tab")
+    .forEach(k=> localStorage.removeItem(k));
+  document.querySelectorAll(".progress > div").forEach(b=> b.style.width="0%");
+  document.querySelectorAll("[id^='deck-score-']").forEach(s=> s.textContent="");
+  const kd = document.getElementById("kpi-decks"); if(kd) kd.textContent = "0";
+  const kb = document.getElementById("kpi-best"); if(kb) kb.textContent = "0%";
+  const kl = document.getElementById("kpi-last"); if(kl) kl.textContent = "—";
+  alert("Progress reset.");
+}
+
+function renderMotivation(){
+  const s = el("section", {id:"mood"});
+  const c = card(`
+    <h2>Gentle Motivation</h2>
+    <p>Hey Romal — tiny reps count. Two cards now > zero later. You’ve got this. 💪</p>
+    <ul>
+      <li>“Smooth is fast.” Take smooth inputs over speed — in study and driving.</li>
+      <li>“One hill at a time.” Choose the right gear before the grade.</li>
+      <li>“Eyes up.” Scan 12–15 seconds ahead in class and on the road.</li>
+    </ul>
+    <div class="row">
+      <button class="btn primary" onclick="activate('gk')">Do 5 cards now</button>
+      <button class="btn" onclick="activate('pretrip')">Try a Pre‑Trip quiz</button>
+    </div>
+  `);
+  s.appendChild(c);
+  return s;
+}
+
+function build(){
+  // Tabs
+  renderTabs();
+  // Sections
+  const main = document.querySelector("main");
+  main.appendChild(renderHome());
+  main.appendChild(renderDeck("gk", "General Knowledge"));
+  main.appendChild(renderDeck("air", "Air Brakes"));
+  main.appendChild(renderDeck("combo", "Combination Vehicles"));
+  main.appendChild(renderDeck("pretrip", "Pre‑Trip Inspection"));
+  main.appendChild(renderDeck("endorse", "Endorsements"));
+  main.appendChild(renderMotivation());
+  // Render quizzes
+  ["gk","air","combo","pretrip","endorse"].forEach(renderQuiz);
+  // Show first card for each section when activated
+  ["gk","air","combo","pretrip","endorse"].forEach(id=>{
+    const obs = new MutationObserver((muts)=>{
+      muts.forEach(m=>{
+        if(m.attributeName==="class" && m.target.classList.contains("active")){
+          showCard(id);
+        }
+      });
+    });
+    const sec = document.getElementById(id);
+    obs.observe(sec, {attributes:true});
+  });
+  // initial state
+  const saved = load("cdl_active_tab", "home");
+  activate(saved);
+  // Initial KPI update
+  updateDeckUI("gk");
+}
+build();
+</script>
+</body>
+</html>
